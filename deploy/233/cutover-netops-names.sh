@@ -44,16 +44,22 @@ install -m 0644 "$SOURCE/netops-ops/deploy/233/netops-platform-api.service" /etc
 
 python3 - "$NGINX" <<'PY'
 from pathlib import Path
+import re
 import sys
 p = Path(sys.argv[1])
 t = p.read_text()
 for old, new in {
-    '/wx/api': '/api', 'wx_login': 'api_login', 'wx_onu_search': 'api_onu_search',
-    'wx_boss': 'api_boss', 'X-WX-API-Proxy': 'X-NetOps-API-Proxy',
+    'location = /wx/api/auth/login {': 'location = /api/auth/login {',
+    'location = /wx/api/netops2026/onu/search {': 'location = /api/netops2026/onu/search {',
+    'location ^~ /wx/api/netops2026/boss/ {': 'location ^~ /api/netops2026/boss/ {',
+    'wx_login': 'netops_login', 'wx_onu_search': 'netops_onu_search',
+    'wx_boss': 'netops_boss', 'X-WX-API-Proxy': 'X-NetOps-API-Proxy',
     'root  /var/www/NetAlert/frontend/dist;': 'root  /srv/netops/netops-portal-web/dist;',
 }.items():
     t = t.replace(old, new)
-if '/wx/api' in t or '/srv/netops/netops-portal-web/dist;' not in t:
+# The generic legacy proxy would collide with the existing unrelated /api/ socket.
+t, removed = re.subn(r'\n\s*location \^~ /wx/api/ \{.*?\n\s*\}\n', '\n', t, count=1, flags=re.S)
+if removed != 1 or '/wx/api' in t or '/srv/netops/netops-portal-web/dist;' not in t:
     raise SystemExit('Nginx normalization verification failed')
 p.write_text(t)
 PY
