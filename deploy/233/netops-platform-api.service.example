@@ -11,7 +11,7 @@ WorkingDirectory=/srv/netops/netops-littleProgram/backend
 EnvironmentFile=/etc/netops/netops-littleProgram.env
 Environment=PYTHONUNBUFFERED=1
 UMask=0027
-ExecStart=/srv/netops/netops-littleProgram/backend/.venv/bin/gunicorn --workers 4 --bind 127.0.0.1:7001 --timeout 120 --graceful-timeout 30 --keep-alive 5 --max-requests 5000 --max-requests-jitter 500 --access-logfile - --error-logfile - run:app
+ExecStart=/srv/netops/netops-littleProgram/backend/.venv/bin/python -m gunicorn --workers 4 --bind 127.0.0.1:7001 --timeout 120 --graceful-timeout 30 --keep-alive 5 --max-requests 5000 --max-requests-jitter 500 --access-logfile - --error-logfile - run:app
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGTERM
 TimeoutStopSec=40

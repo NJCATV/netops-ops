@@ -13,7 +13,7 @@ WorkingDirectory=/srv/netops/netops-littleProgram/backend
 EnvironmentFile=/srv/netops/netops-littleProgram/backend/.env
 Environment=PYTHONUNBUFFERED=1
 UMask=0027
-ExecStart=/srv/netops/netops-littleProgram/backend/.venv/bin/gunicorn \
+ExecStart=/srv/netops/netops-littleProgram/backend/.venv/bin/python -m gunicorn \
   --workers 4 \
   --bind 127.0.0.1:7001 \
   --timeout 120 \
