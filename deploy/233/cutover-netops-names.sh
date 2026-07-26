@@ -61,7 +61,22 @@ for old, new in {
 # Retain NetOps' generic route, but make it more specific than the unrelated /api/ socket.
 t = t.replace('location ^~ /wx/api/ {', 'location ^~ /api/netops2026/ {')
 t = t.replace('proxy_pass http://127.0.0.1:7001/api/;', 'proxy_pass http://127.0.0.1:7001/api/netops2026/;', 1)
-if re.search(r'^[ \t]*location\b[^\n]*?/wx/api', t, flags=re.M) or 'location ^~ /api/netops2026/' not in t or '/srv/netops/netops-portal-web/dist;' not in t:
+legacy_block = '''    # 已废弃的微信小程序入口；禁止回退到 SPA 首页，避免旧客户端悄然继续使用。
+    location = /wx {
+        return 410;
+    }
+
+    location ^~ /wx/ {
+        return 410;
+    }
+
+'''
+spa_marker = '    # ② 单页应用入口（前端页面 + 限流）\n'
+if 'location ^~ /wx/' not in t:
+    if spa_marker not in t:
+        raise SystemExit('Nginx SPA marker missing; refusing to insert legacy-route block')
+    t = t.replace(spa_marker, legacy_block + spa_marker, 1)
+if re.search(r'^[ \t]*location\b[^\n]*?/wx/api', t, flags=re.M) or 'location ^~ /api/netops2026/' not in t or 'location ^~ /wx/' not in t or '/srv/netops/netops-portal-web/dist;' not in t:
     raise SystemExit('Nginx normalization verification failed')
 p.write_text(t)
 PY
