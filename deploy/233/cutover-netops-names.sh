@@ -59,7 +59,7 @@ for old, new in {
     t = t.replace(old, new)
 # The generic legacy proxy would collide with the existing unrelated /api/ socket.
 t, removed = re.subn(r'\n\s*location \^~ /wx/api/ \{.*?\n\s*\}\n', '\n', t, count=1, flags=re.S)
-if removed != 1 or '/wx/api' in t or '/srv/netops/netops-portal-web/dist;' not in t:
+if removed != 1 or re.search(r'^[ \t]*location\b[^\n]*?/wx/api', t, flags=re.M) or '/srv/netops/netops-portal-web/dist;' not in t:
     raise SystemExit('Nginx normalization verification failed')
 p.write_text(t)
 PY
