@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+*.log
+logs/
+reports/raw/
+backups/
+*.sql.gz
+*.pcap
+*.pcapng
+*.pem
+*.key
+secrets/

@@ -1,0 +1,12 @@
+[Unit]
+Description=每 4 分钟预热 ONU 质差默认查询缓存
+
+[Timer]
+OnBootSec=90s
+OnUnitActiveSec=4min
+RandomizedDelaySec=20s
+AccuracySec=5s
+Unit=zhiwei-quality-cache.service
+
+[Install]
+WantedBy=timers.target
