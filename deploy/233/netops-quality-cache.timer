@@ -6,7 +6,7 @@ OnBootSec=90s
 OnUnitActiveSec=4min
 RandomizedDelaySec=20s
 AccuracySec=5s
-Unit=zhiwei-quality-cache.service
+Unit=netops-quality-cache.service
 
 [Install]
 WantedBy=timers.target

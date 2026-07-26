@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 # 将新版智维平台切换为 5772 根入口，并把原根目录旧版迁移到 /2025/。
-# 只修改前端静态文件与 Nginx 路由，不重启旧版 API、Celery 或 zhiwei-api。
+# 只修改前端静态文件与 Nginx 路由，不重启旧版 API、Celery 或 netops-platform-api。
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 BUILD_DIR=${1:-$SCRIPT_DIR/root-dist}
 DIST_ROOT=/var/www/NetAlert/frontend/dist
@@ -118,7 +118,7 @@ ROOT_CODE=$(curl -k -sS -H 'Host: anbo.njcatv.net' -o "$ROOT_TMP" -w '%{http_cod
 LEGACY_CODE=$(curl -k -sS -H 'Host: anbo.njcatv.net' -o "$LEGACY_TMP" -w '%{http_code}' https://127.0.0.1:5772/2025/)
 REDIRECT_RESULT=$(curl --noproxy '*' -k -sS -o /dev/null -w '%{http_code} %{redirect_url}' -H 'Host: anbo.njcatv.net' https://127.0.0.1:5772/2026/)
 read -r REDIRECT_CODE REDIRECT_URL <<<"$REDIRECT_RESULT"
-API_CODE=$(curl -k -sS -H 'Host: anbo.njcatv.net' -o /dev/null -w '%{http_code}' https://127.0.0.1:5772/wx/api/netops2026/auth/me)
+API_CODE=$(curl -k -sS -H 'Host: anbo.njcatv.net' -o /dev/null -w '%{http_code}' https://127.0.0.1:5772/api/netops2026/auth/me)
 
 if [[ "$ROOT_CODE" != "200" ]] || ! cmp -s "$ROOT_TMP" "$DIST_ROOT/index.html"; then
   fail "验收失败：新版根入口或 SPA 回退异常（HTTP $ROOT_CODE）。"

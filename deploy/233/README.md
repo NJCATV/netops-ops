@@ -5,7 +5,7 @@
 | 文件或目录 | 用途 |
 | --- | --- |
 | `install-zhiwei-production.sh` | zhiwei API 生产服务安装/更新 |
-| `zhiwei-api.service` | systemd 服务单元模板 |
+| `netops-platform-api.service` | systemd 服务单元模板 |
 | `nginx-root-entry-locations.conf` | 新版根入口和旧版兼容 location 配置 |
 | `nginx-2026-location.conf` | 2026 入口相关 Nginx 片段 |
 | `install-zhiwei-root-entry.sh` | 根入口部署辅助脚本 |

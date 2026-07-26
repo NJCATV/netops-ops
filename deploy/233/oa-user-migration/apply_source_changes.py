@@ -6,7 +6,7 @@ import sys
 from datetime import datetime, timezone
 
 
-PROJECT_ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else "/home/yvesyuan/PycharmProjects/anbo_wx")
+PROJECT_ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else "/srv/netops/netops-littleProgram")
 STAMP = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 BACKUP_ROOT = PROJECT_ROOT / "backend" / "deploy-backups" / f"oa-user-master-{STAMP}"
 

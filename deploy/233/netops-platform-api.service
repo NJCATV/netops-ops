@@ -9,11 +9,11 @@ StartLimitBurst=5
 Type=simple
 User=yvesyuan
 Group=www-data
-WorkingDirectory=/home/yvesyuan/PycharmProjects/anbo_wx/backend
-EnvironmentFile=/home/yvesyuan/PycharmProjects/anbo_wx/backend/.env
+WorkingDirectory=/srv/netops/netops-littleProgram/backend
+EnvironmentFile=/srv/netops/netops-littleProgram/backend/.env
 Environment=PYTHONUNBUFFERED=1
 UMask=0027
-ExecStart=/home/yvesyuan/PycharmProjects/anbo_wx/backend/.venv/bin/gunicorn \
+ExecStart=/srv/netops/netops-littleProgram/backend/.venv/bin/gunicorn \
   --workers 4 \
   --bind 127.0.0.1:7001 \
   --timeout 120 \
@@ -39,7 +39,7 @@ ProtectKernelModules=true
 ProtectControlGroups=true
 RestrictSUIDSGID=true
 LockPersonality=true
-ReadWritePaths=/home/yvesyuan/PycharmProjects/anbo_wx/backend/uploads /home/yvesyuan/PycharmProjects/anbo_wx/backend/logs
+ReadWritePaths=/srv/netops/netops-littleProgram/backend/uploads /srv/netops/netops-littleProgram/backend/logs
 LimitNOFILE=65536
 
 [Install]

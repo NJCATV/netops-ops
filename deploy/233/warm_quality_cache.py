@@ -8,7 +8,7 @@ import sys
 import time
 from urllib import request
 
-BACKEND_ROOT = Path("/home/yvesyuan/PycharmProjects/anbo_wx/backend")
+BACKEND_ROOT = Path("/srv/netops/netops-littleProgram/backend")
 sys.path.insert(0, str(BACKEND_ROOT))
 
 from app import create_app

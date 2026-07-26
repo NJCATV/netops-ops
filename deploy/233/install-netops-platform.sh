@@ -5,11 +5,11 @@ set -Eeuo pipefail
 # 不会重启 newalertadmin、Celery，也不会修改旧版 5772/ 与 5772/api/。
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-BACKEND=/home/yvesyuan/PycharmProjects/anbo_wx/backend
-SERVICE_FILE=/etc/systemd/system/zhiwei-api.service
+BACKEND=/srv/netops/netops-littleProgram/backend
+SERVICE_FILE=/etc/systemd/system/netops-platform-api.service
 NGINX_FILE=/etc/nginx/sites-enabled/netalert_frontend.conf
 NGINX_SNIPPET_FILE=$SCRIPT_DIR/nginx-2026-location.conf
-UNIT_SOURCE=$SCRIPT_DIR/zhiwei-api.service
+UNIT_SOURCE=$SCRIPT_DIR/netops-platform-api.service
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 BACKUP_DIR=/var/backups/zhiwei-production/$STAMP
 OLD_START=$BACKEND/start-netops7001.sh
@@ -39,7 +39,7 @@ fi
 mkdir -p "$BACKUP_DIR"
 cp -a "$NGINX_FILE" "$BACKUP_DIR/netalert_frontend.conf.before"
 if [[ -f "$SERVICE_FILE" ]]; then
-  cp -a "$SERVICE_FILE" "$BACKUP_DIR/zhiwei-api.service.before"
+  cp -a "$SERVICE_FILE" "$BACKUP_DIR/netops-platform-api.service.before"
 fi
 crontab -u yvesyuan -l >"$CRON_BEFORE" 2>/dev/null || :
 
@@ -49,7 +49,7 @@ rollback() {
     return
   fi
   echo "切换失败，开始回滚（备份：$BACKUP_DIR）" >&2
-  systemctl stop zhiwei-api.service 2>/dev/null || true
+  systemctl stop netops-platform-api.service 2>/dev/null || true
   if [[ $NGINX_CHANGED -eq 1 ]]; then
     cp -a "$BACKUP_DIR/netalert_frontend.conf.before" "$NGINX_FILE"
     nginx -t && systemctl reload nginx || true
@@ -111,13 +111,13 @@ awk '!/start-netops7001\.sh/ && !/codex-netops7001/' "$CRON_BEFORE" >"$CRON_AFTE
 crontab -u yvesyuan "$CRON_AFTER"
 
 systemctl daemon-reload
-systemctl enable --now zhiwei-api.service
+systemctl enable --now netops-platform-api.service
 SERVICE_STARTED=1
 systemctl reload nginx
 
 sleep 3
-systemctl is-active --quiet zhiwei-api.service
-systemctl is-enabled --quiet zhiwei-api.service
+systemctl is-active --quiet netops-platform-api.service
+systemctl is-enabled --quiet netops-platform-api.service
 
 API_CODE=$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:7001/api/auth/me)
 if [[ "$API_CODE" != "401" ]]; then
@@ -137,6 +137,6 @@ fi
 trap - ERR
 echo "切换成功。"
 echo "备份目录：$BACKUP_DIR"
-systemctl --no-pager --full status zhiwei-api.service | head -25
+systemctl --no-pager --full status netops-platform-api.service | head -25
 ss -ltnp 'sport = :7001'
 echo "/2026/ SPA fallback: HTTP $SPA_CODE，内容与新版 index.html 一致"
