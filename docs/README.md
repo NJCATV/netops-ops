@@ -22,6 +22,7 @@
 | --- | --- |
 | [平台架构与模块地图](platform-architecture-and-module-map.md) | 当前服务器、调用关系、模块职责、命名和安全基线 |
 | [2026-07-26 交付与安全记录](platform-delivery-and-security-20260726.md) | 本轮功能、Radius、可观测性与端口收敛的事实记录 |
+| [2026-07-26 安全运行态核验](security-runtime-audit-20260726.md) | 233/20/213/236 的实际防火墙、Docker 端口守卫与 Fail2ban 核验 |
 | [Radius ClickHouse 迁移](radius-clickhouse-migration-20260726.md) | 213 Radius 采集、212 数据模型、回滚与验收 |
 | [Radius 业务画像与流量优化](radius-profile-and-traffic-optimization-20260726.md) | Radius 业务/性能分析设计 |
 | [Radius 与 ONU 六轮审计](radius-terminal-onu-six-pass-audit-20260726.md) | 终端关联及审计结论 |

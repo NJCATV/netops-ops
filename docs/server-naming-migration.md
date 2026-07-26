@@ -4,11 +4,11 @@ This is the current migration target. Repository names are also the canonical de
 
 | Server | Current confirmed runtime | Target repository / directory | Target service or runtime | Status |
 | --- | --- | --- | --- | --- |
-| 233 platform | `anbo_wx`, `zhiwei-api.service`, Nginx `:5772` | `netops-littleProgram`, `netops-platform-api`, `netops-portal-web` | `netops-platform-api.service`, Nginx `/api/*` | Sources and static artifact staged; root cutover pending |
+| 233 platform | Historical `anbo_wx`, `zhiwei-api.service` | `netops-littleProgram`, `netops-platform-api`, `netops-portal-web` | `netops-platform-api.service`, Nginx `/api/netops2026/*` | Completed 2026-07-26; `/srv/netops/` sources active, legacy `/wx/*` returns 410 |
 | 236 collection | `go-collector` source plus `newalert.service` / `newalertapi.service` | `netops-collector` | `netops-collector.service`; alert runtime ownership must be confirmed before rename | Inventory complete; live collector unit not yet identified |
-| 20 AIOps | Compose files at `/opt/jscn-aiops/deploy` | `netops-aiops` | `netops-aiops-*` Compose project/container names | Compose path confirmed; Docker inspection needs elevated access |
-| 213 RADIUS | RADIUS monitor runtime | `netops-radius-monitor` | `netops-radius-monitor.service` | SSH access required |
-| 212 data | ClickHouse runtime | operational data node, no application-code repository | `clickhouse-server` retained | SSH access required |
+| 20 AIOps | Compose files at `/opt/jscn-aiops/deploy` | `netops-aiops` | `netops-aiops-*` Compose project/container names | Runtime and port guard verified; deployment-directory/container rename remains a separate planned change |
+| 213 RADIUS | RADIUS monitor runtime | `netops-radius-monitor` | `netops-radius-monitor.service` | SSH and port guard verified; source/unit canonical-name cutover still needs a dedicated release window |
+| 212 data | ClickHouse runtime | operational data node, no application-code repository | `clickhouse-server` retained | Application relationship verified through callers; host-level SSH audit still required |
 
 ## Naming rules
 

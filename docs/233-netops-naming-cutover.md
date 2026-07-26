@@ -1,17 +1,31 @@
 # 233 NetOps naming and path cutover
 
-## Confirmed current state
+## Confirmed post-cutover state
 
-On 2026-07-26 the active public listener is `172.31.1.233:5772` (TLS). Nginx forwards the NetOps API to `127.0.0.1:7001`, where the unit is still named `zhiwei-api.service` and starts from the historical directory `/home/yvesyuan/PycharmProjects/anbo_wx/backend`.
+The cutover completed on 2026-07-26. The active public listener is
+`172.31.1.233:5772` (TLS); Nginx forwards the NetOps API to the loopback-only
+`127.0.0.1:7001` BFF.
 
-Those names are legacy implementation details, not the desired NetOps architecture. The obsolete `/wx` API prefix is removed during this cutover; clients use `/api/netops2026/` only.
+| Item | Verified state |
+| --- | --- |
+| Application source | `/srv/netops/netops-littleProgram` |
+| BFF adapter source | `/srv/netops/netops-platform-api` |
+| Portal static assets | `/srv/netops/netops-portal-web/dist` |
+| systemd unit | `netops-platform-api.service` (`active`, `enabled`) |
+| Public API | `/api/netops2026/*` |
+| Legacy `/wx/*` route | Explicit `410 Gone` rejection |
+| Old `zhiwei-api.service` | Stopped after successful verification |
+
+The historical `anbo_wx` source and `zhiwei-api.service` are retained only as
+rollback material until a separately approved cleanup change. They are not the
+active deployment identity.
 
 ## Target naming
 
 | Concern | Current legacy name | Target name |
 | --- | --- | --- |
 | Platform host source | `anbo_wx` | `/srv/netops/netops-littleProgram` |
-| BFF integration source | mixed into host working tree | `/srv/netops/platform-api` |
+| BFF integration source | mixed into host working tree | `/srv/netops/netops-platform-api` |
 | Portal source/build | historical deployment directory | `/srv/netops/netops-portal-web` |
 | systemd unit | `zhiwei-api.service` | `netops-platform-api.service` |
 | Service description | 智维平台 API | NetOps Platform API |
@@ -20,14 +34,14 @@ Those names are legacy implementation details, not the desired NetOps architectu
 
 The external HTTPS entry remains `:5772`. Ports `80` and `443` must not appear as the NetOps entry in topology cards or documentation.
 
-## Safe cutover sequence
+## Executed cutover and repeatable procedure
 
-1. Clone the three pinned GitHub modules under `/srv/netops/`; copy no `.env`, logs, uploads, database files, keys, or historical backups into Git.
+1. Sync the three pinned GitHub modules under `/srv/netops/`; copy no `.env`, logs, uploads, database files, keys, or historical backups into Git.
 2. Create `/etc/netops/netops-littleProgram.env` with mode `0640`, owner `root:www-data`; migrate values from the old protected environment file manually.
-3. Create a Python virtual environment in `/srv/netops/netops-littleProgram/backend`, install locked runtime dependencies, and apply the NetOps adapter from `netops-platform-api/platform-adapter/host-application/`.
+3. Preserve the protected virtual environment in `/srv/netops/netops-littleProgram/backend` and apply the NetOps adapter from `netops-platform-api/platform-adapter/host-application/`.
 4. Build `netops-portal-web` to `/srv/netops/netops-portal-web/dist` and point the Nginx SPA root to that directory.
 5. Install the unit and Nginx examples in `deploy/233/`; run `nginx -t` and `systemctl daemon-reload` before restart.
-6. Verify locally through `https://127.0.0.1:5772/` with the expected Host header, `http://127.0.0.1:7001/api/netops2026/navigation`, and the collector/AIOps/Radius paths. Roll back by restoring the prior unit and Nginx backup only if verification fails.
+6. Verify with TLS SNI: `curl --resolve anbo.njcatv.net:5772:127.0.0.1 https://anbo.njcatv.net:5772/api/netops2026/auth/me` must return `401`; the equivalent `/wx/api/health` request must return `410`. Roll back by restoring the prior unit and Nginx backup only if verification fails.
 7. After a stable observation window, remove the old unit and legacy source directory only through an approved maintenance change. Do not delete them during initial cutover.
 
 ## Security boundaries
