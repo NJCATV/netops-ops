@@ -72,9 +72,9 @@ systemctl disable --now zhiwei-api.service
 systemctl enable --now netops-platform-api.service
 systemctl is-active --quiet netops-platform-api.service
 systemctl reload nginx
-code=$(curl -k -s -o /dev/null -w '%{http_code}' -H 'Host: anbo.njcatv.net' https://127.0.0.1:5772/api/netops2026/auth/me)
+code=$(curl -k -s -o /dev/null -w '%{http_code}' -A 'NetOps-HealthCheck/1.0' -H 'Host: anbo.njcatv.net' https://127.0.0.1:5772/api/netops2026/auth/me)
 [[ "$code" == 401 ]] || { echo "unexpected NetOps API status: $code" >&2; exit 1; }
-if curl -kfsS -H 'Host: anbo.njcatv.net' https://127.0.0.1:5772/wx/api/health >/dev/null; then
+if curl -kfsS -A 'NetOps-HealthCheck/1.0' -H 'Host: anbo.njcatv.net' https://127.0.0.1:5772/wx/api/health >/dev/null; then
   echo 'obsolete /wx route is still reachable' >&2
   exit 1
 fi
