@@ -1,5 +1,5 @@
 [Unit]
-Description=南京安播智维平台 API（anbo_wx）
+Description=NetOps Platform API
 After=network-online.target mysql.service redis-server.service
 Wants=network-online.target mysql.service redis-server.service
 StartLimitIntervalSec=60
@@ -10,7 +10,7 @@ Type=simple
 User=yvesyuan
 Group=www-data
 WorkingDirectory=/srv/netops/netops-littleProgram/backend
-EnvironmentFile=/srv/netops/netops-littleProgram/backend/.env
+EnvironmentFile=/etc/netops/netops-littleProgram.env
 Environment=PYTHONUNBUFFERED=1
 UMask=0027
 ExecStart=/srv/netops/netops-littleProgram/backend/.venv/bin/python -m gunicorn \
