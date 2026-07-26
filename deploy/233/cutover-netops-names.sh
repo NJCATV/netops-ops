@@ -39,6 +39,7 @@ done
 
 cp -a "$TARGET/netops-platform-api/platform-adapter/host-application/backend/app/routes/netops2026.py" "$TARGET/netops-littleProgram/backend/app/routes/netops2026.py"
 cp -a "$OLD/backend/.venv" "$TARGET/netops-littleProgram/backend/.venv"
+install -d -m 0750 -o "$OWNER" -g www-data "$TARGET/netops-littleProgram/backend/uploads" "$TARGET/netops-littleProgram/backend/logs"
 install -m 0640 -o root -g www-data "$OLD/backend/.env" /etc/netops/netops-littleProgram.env
 install -m 0644 "$SOURCE/netops-ops/deploy/233/netops-platform-api.service" /etc/systemd/system/netops-platform-api.service
 
