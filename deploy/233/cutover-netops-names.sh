@@ -58,9 +58,10 @@ for old, new in {
     'root  /var/www/NetAlert/frontend/dist;': 'root  /srv/netops/netops-portal-web/dist;',
 }.items():
     t = t.replace(old, new)
-# The generic legacy proxy would collide with the existing unrelated /api/ socket.
-t, removed = re.subn(r'\n\s*location \^~ /wx/api/ \{.*?\n\s*\}\n', '\n', t, count=1, flags=re.S)
-if removed != 1 or re.search(r'^[ \t]*location\b[^\n]*?/wx/api', t, flags=re.M) or '/srv/netops/netops-portal-web/dist;' not in t:
+# Retain NetOps' generic route, but make it more specific than the unrelated /api/ socket.
+t = t.replace('location ^~ /wx/api/ {', 'location ^~ /api/netops2026/ {')
+t = t.replace('proxy_pass http://127.0.0.1:7001/api/;', 'proxy_pass http://127.0.0.1:7001/api/netops2026/;', 1)
+if re.search(r'^[ \t]*location\b[^\n]*?/wx/api', t, flags=re.M) or 'location ^~ /api/netops2026/' not in t or '/srv/netops/netops-portal-web/dist;' not in t:
     raise SystemExit('Nginx normalization verification failed')
 p.write_text(t)
 PY
@@ -71,7 +72,8 @@ systemctl disable --now zhiwei-api.service
 systemctl enable --now netops-platform-api.service
 systemctl is-active --quiet netops-platform-api.service
 systemctl reload nginx
-curl -kfsS -H 'Host: anbo.njcatv.net' https://127.0.0.1:5772/api/health >/dev/null
+code=$(curl -k -s -o /dev/null -w '%{http_code}' -H 'Host: anbo.njcatv.net' https://127.0.0.1:5772/api/netops2026/auth/me)
+[[ "$code" == 401 ]] || { echo "unexpected NetOps API status: $code" >&2; exit 1; }
 if curl -kfsS -H 'Host: anbo.njcatv.net' https://127.0.0.1:5772/wx/api/health >/dev/null; then
   echo 'obsolete /wx route is still reachable' >&2
   exit 1
