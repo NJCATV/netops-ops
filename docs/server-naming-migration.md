@@ -8,7 +8,7 @@ This is the current migration target. Repository names are also the canonical de
 | 236 collection | `go-collector` process at `/home/jscn123/PycharmProjects/go-collector` plus independent `newalert.service` / `newalertapi.service` | `netops-collector` | `netops-collector.service`; alert runtime ownership must be confirmed before rename | Source baseline verified and staging clone created; live process/directory cutover still requires a release plan |
 | 20 AIOps | Compose files at `/opt/jscn-aiops/deploy` | `netops-aiops` | `netops-aiops-*` Compose project/container names | Source synchronized to a controlled staging clone; runtime and port guard verified; deployment-directory/container rename remains a separate planned change |
 | 213 RADIUS | `radius-sniffer.service` at `/opt/radius_monitor` | `netops-radius-monitor` | `netops-radius-monitor.service` | Source synchronized to a controlled staging clone; SSH and port guard verified; source/unit canonical-name cutover still needs a dedicated release window |
-| 212 data | ClickHouse runtime | operational data node, no application-code repository | `clickhouse-server` retained | Application relationship verified through callers; host-level SSH audit still required |
+| 212 data | ClickHouse runtime | operational data node, no application-code repository | `clickhouse-server` retained | Completed 2026-07-27: controlled `netops-ops` staging copy, ClickHouse port guard, and SSH Fail2ban verified; no application-name cutover applies |
 
 ## Naming rules
 
