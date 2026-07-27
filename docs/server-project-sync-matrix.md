@@ -4,7 +4,7 @@
 
 | 服务器 | 承载项目与职责 | 生产运行目录 | 本地受控仓库 | 服务器受控副本 | GitHub 仓库 | 当前同步结论 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 233 `172.31.1.233` | 统一入口、门户前端、BFF、小程序业务后端 | `/srv/netops/netops-portal-web`；`/srv/netops/netops-littleProgram` | `netops-portal-web`、`netops-platform-api`、`netops-littleProgram` | `/home/yvesyuan/netops-staging/netops-ops` | `NJCATV/netops-portal-web`、`netops-platform-api`、`netops-littleProgram` | 入口为 `5772`，BFF 为本机 `7001`。本次仅发布拓扑/日志修复相关文件；其余前端调整按发布窗口合并。 |
+| 233 `172.31.1.233` | 统一入口、门户前端、BFF、小程序业务后端 | `/srv/netops/netops-portal-web`；`/srv/netops/netops-littleProgram` | `netops-portal-web`、`netops-platform-api`、`netops-littleProgram` | `/home/yvesyuan/netops-staging/netops-ops` | `NJCATV/netops-portal-web`、`netops-platform-api`、`netops-littleProgram` | 入口为 `5772`，BFF 为本机 `7001`。本次已定向发布拓扑和日志修复；运行树保留两处受控文件改动，需在下一次完整前端发布时与 GitHub 提交合并，不能用重置覆盖。 |
 | 236 `172.31.1.236` | Go 采集器、采集 Agent、采集 MySQL 与设备查询 | `/home/jscn123/PycharmProjects/go-collector` | `netops-collector` | `/home/jscn123/netops-staging/netops-collector` | `NJCATV/netops-collector` | 受控副本与 GitHub 一致；遗留运行目录保持原样，待采集服务正式切换后再更名。 |
 | 20 `172.25.60.20` | AIOps、分析任务、ELK、Kibana | `/opt/jscn-aiops` | `netops-aiops` | `/home/yvesyuan/netops-staging/netops-aiops` | `NJCATV/netops-aiops` | 受控副本与 GitHub 一致；运行目录仍有未审核改动，禁止强制覆盖，需单独评审发布。 |
 | 213 `172.25.194.213` | Radius 报文抓取、解析、spool 与落库 | `/opt/radius_monitor` | `netops-radius-monitor` | `/home/njcatv/netops-staging/netops-radius-monitor` | `NJCATV/netops-radius-monitor` | 受控副本与 GitHub 一致；运行目录为非 Git 目录，需在发布窗口纳入版本化目录。 |
