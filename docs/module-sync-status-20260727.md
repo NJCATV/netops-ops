@@ -6,7 +6,7 @@
 
 | 模块 | GitHub 主仓库 | 已核验的代码基线 | 服务器受控副本 | 生产运行状态 |
 | --- | --- | --- | --- | --- |
-| 网管前端 | `netops-portal-web` | `481bb8e` | 233 `/srv/netops/netops-portal-web` | 已部署，入口 `https://anbo.njcatv.net:5772/` |
+| 网管前端 | `netops-portal-web` | `481bb8e` 为本次已部署基线 | 233 `/srv/netops/netops-portal-web` | 已部署；该目录正在由用户调整，后续不自动同步或覆盖 |
 | 平台 API | `netops-platform-api` | `823efd6` | 233 `/srv/netops/netops-platform-api` | 已部署为 `netops-platform-api.service` |
 | 小程序 | `netops-littleProgram` | `b855ac2` | 233 `/srv/netops/netops-littleProgram` | 已纳入统一目录；业务运行按原发布单元保留 |
 | 采集 | `netops-collector` | `ca94c88`；与 236 旧仓 `e6c7c51` 核验 | 236 `/home/jscn123/netops-staging/netops-collector` | 原 `collector-agent` 仍从 `/home/jscn123/PycharmProjects/go-collector` 运行 |
@@ -33,3 +33,4 @@
 - 236 的入站策略仍是默认开放；需先确认采集 Agent `18086`、MySQL `3339` 和管理来源矩阵后，建立主机防火墙白名单。
 - 20 和 213 的端口守卫、233 的 UFW 与 Fail2ban 已核验；详细事实见 [安全运行审计](security-runtime-audit-20260726.md)。
 - 212 为数据节点，尚需单独完成 SSH 与主机级访问审计，再决定是否建立部署暂存目录。
+- 233 前端源码目录当前由用户直接调整；待用户确认后，再以其确认的提交作为下一次同步基线。
