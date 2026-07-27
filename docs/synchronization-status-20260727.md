@@ -4,15 +4,15 @@ This document distinguishes a **controlled source copy** from a **production run
 
 ## Canonical GitHub repositories
 
-| Module | Repository | Canonical `main` at audit |
+| Module | Repository | Canonical source |
 | --- | --- | --- |
-| Operations, deployment, topology and security | `NJCATV/netops-ops` | `fd679b4` |
-| Collector | `NJCATV/netops-collector` | `ca94c88` |
-| Portal web | `NJCATV/netops-portal-web` | `a947d4c` |
-| Platform API | `NJCATV/netops-platform-api` | `fe3e844` |
-| RADIUS monitor | `NJCATV/netops-radius-monitor` | `6eab281` |
-| AIOps | `NJCATV/netops-aiops` | `b9ce25c` |
-| Mini program | `NJCATV/netops-littleProgram` | `85ec6a6` |
+| Operations, deployment, topology and security | `NJCATV/netops-ops` | current protected `main` |
+| Collector | `NJCATV/netops-collector` | current protected `main` |
+| Portal web | `NJCATV/netops-portal-web` | current protected `main` |
+| Platform API | `NJCATV/netops-platform-api` | current protected `main` |
+| RADIUS monitor | `NJCATV/netops-radius-monitor` | current protected `main` |
+| AIOps | `NJCATV/netops-aiops` | current protected `main` |
+| Mini program | `NJCATV/netops-littleProgram` | current protected `main` |
 
 All seven local canonical clones under `F:/codeXSpace/netops-migration/` were clean at this audit. Runtime secrets, captures, database exports and logs are intentionally excluded from Git.
 
@@ -20,11 +20,11 @@ All seven local canonical clones under `F:/codeXSpace/netops-migration/` were cl
 
 | Host | Controlled staging copy | Production runtime | Release state |
 | --- | --- | --- | --- |
-| 233 platform | `netops-ops` was fast-forwarded to `fd679b4` | API source remains `b792f2f`; web source remains `13ae970` | Do not overwrite: the user is actively adjusting portal code. API/web changes need a reviewed release, build and health check. |
+| 233 platform | `netops-ops` tracks current `main` | API source remains `b792f2f`; web source remains `13ae970` | Do not overwrite: the user is actively adjusting portal code. API/web changes need a reviewed release, build and health check. |
 | 236 collector | `netops-collector` verified at `ca94c88`, clean | Legacy collector remains at `/home/jscn123/PycharmProjects/go-collector` at `e6c7c51`, clean | Source baseline is preserved; directory/service rename requires the collector release plan and source-allowlist decision. |
 | 20 AIOps | `netops-aiops` fast-forwarded to `b9ce25c` | `/opt/jscn-aiops` is an old dirty Git worktree | Preserved intentionally. Its remaining semantic changes must be reviewed and merged before runtime cutover. |
 | 213 RADIUS | `netops-radius-monitor` verified at `6eab281` | `/opt/radius_monitor` is a non-Git runtime directory | Captured source is controlled; a dedicated release window is required to rename its unit/directory. |
-| 212 data | `netops-ops` fast-forwarded through a verified offline bundle to `f300118`, clean | ClickHouse only; no application source tree | Guard and Fail2ban are active. No fabricated application repository is needed for this data node. |
+| 212 data | `netops-ops` tracks current `main` through a verified offline bundle, clean | ClickHouse only; no application source tree | Guard and Fail2ban are active. No fabricated application repository is needed for this data node. |
 
 ## Local legacy workspace quarantine
 
