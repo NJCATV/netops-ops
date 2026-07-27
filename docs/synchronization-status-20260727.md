@@ -21,10 +21,10 @@ All seven local canonical clones under `F:/codeXSpace/netops-migration/` were cl
 | Host | Controlled staging copy | Production runtime | Release state |
 | --- | --- | --- | --- |
 | 233 platform | `netops-ops` was fast-forwarded to `fd679b4` | API source remains `b792f2f`; web source remains `13ae970` | Do not overwrite: the user is actively adjusting portal code. API/web changes need a reviewed release, build and health check. |
-| 236 collector | `netops-collector` was previously verified at `ca94c88` | Legacy collector remains at `/home/jscn123/PycharmProjects/go-collector` | Source baseline is preserved; directory/service rename requires the collector release plan and source-allowlist decision. |
+| 236 collector | `netops-collector` verified at `ca94c88`, clean | Legacy collector remains at `/home/jscn123/PycharmProjects/go-collector` at `e6c7c51`, clean | Source baseline is preserved; directory/service rename requires the collector release plan and source-allowlist decision. |
 | 20 AIOps | `netops-aiops` fast-forwarded to `b9ce25c` | `/opt/jscn-aiops` is an old dirty Git worktree | Preserved intentionally. Its remaining semantic changes must be reviewed and merged before runtime cutover. |
 | 213 RADIUS | `netops-radius-monitor` verified at `6eab281` | `/opt/radius_monitor` is a non-Git runtime directory | Captured source is controlled; a dedicated release window is required to rename its unit/directory. |
-| 212 data | `netops-ops` was verified at `aca4674`; its update to `fd679b4` is pending the next permitted SSH connection | ClickHouse only; no application source tree | Guard and Fail2ban are active. No fabricated application repository is needed for this data node. |
+| 212 data | `netops-ops` fast-forwarded through a verified offline bundle to `f300118`, clean | ClickHouse only; no application source tree | Guard and Fail2ban are active. No fabricated application repository is needed for this data node. |
 
 ## Local legacy workspace quarantine
 
