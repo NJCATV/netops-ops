@@ -61,6 +61,9 @@ for old, new in {
 # Retain NetOps' generic route, but make it more specific than the unrelated /api/ socket.
 t = t.replace('location ^~ /wx/api/ {', 'location ^~ /api/netops2026/ {')
 t = t.replace('proxy_pass http://127.0.0.1:7001/api/;', 'proxy_pass http://127.0.0.1:7001/api/netops2026/;', 1)
+# The generic /api/ block belongs to the same Flask BFF.  Leaving it on the
+# historical newalert socket makes portal administration endpoints return 404.
+t = t.replace('proxy_pass http://unix:/tmp/gunicorn_newalertadmin.sock:/api/;', 'proxy_pass http://127.0.0.1:7001;', 1)
 legacy_block = '''    # 已废弃的微信小程序入口；禁止回退到 SPA 首页，避免旧客户端悄然继续使用。
     location = /wx {
         return 410;
@@ -76,7 +79,7 @@ if 'location ^~ /wx/' not in t:
     if spa_marker not in t:
         raise SystemExit('Nginx SPA marker missing; refusing to insert legacy-route block')
     t = t.replace(spa_marker, legacy_block + spa_marker, 1)
-if re.search(r'^[ \t]*location\b[^\n]*?/wx/api', t, flags=re.M) or 'location ^~ /api/netops2026/' not in t or 'location ^~ /wx/' not in t or '/srv/netops/netops-portal-web/dist;' not in t:
+if re.search(r'^[ \t]*location\b[^\n]*?/wx/api', t, flags=re.M) or 'location ^~ /api/netops2026/' not in t or 'location ^~ /wx/' not in t or '/srv/netops/netops-portal-web/dist;' not in t or 'proxy_pass http://unix:/tmp/gunicorn_newalertadmin.sock:/api/;' in t:
     raise SystemExit('Nginx normalization verification failed')
 p.write_text(t)
 PY
@@ -93,6 +96,8 @@ for _ in {1..10}; do
   sleep 1
 done
 [[ "$code" == 401 ]] || { echo "unexpected NetOps API status: $code" >&2; exit 1; }
+admin_code=$(curl -k -s -o /dev/null -w '%{http_code}' --resolve anbo.njcatv.net:5772:127.0.0.1 -A 'NetOps-HealthCheck/1.0' https://anbo.njcatv.net:5772/api/admin/menus)
+[[ "$admin_code" == 401 ]] || { echo "unexpected admin API status: $admin_code" >&2; exit 1; }
 for _ in {1..10}; do
   legacy_code=$(curl -k -s -o /dev/null -w '%{http_code}' --resolve anbo.njcatv.net:5772:127.0.0.1 -A 'NetOps-HealthCheck/1.0' https://anbo.njcatv.net:5772/wx/api/health)
   [[ "$legacy_code" == 410 ]] && break
