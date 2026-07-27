@@ -11,4 +11,4 @@
 | `netops-aiops` | AIOps、ELK、规则和分析任务 | 20 |
 | `netops-littleProgram` | 小程序及其业务后端 | 233 |
 
-先阅读 [模块地图](docs/module-map.md)、[服务器与拓扑](docs/server-topology.md) 和 [同步约定](docs/sync-contract.md)。禁止提交密码、Token、真实 `.env`、客户数据、原始日志、数据库导出或构建产物。
+先阅读 [模块地图](docs/module-map.md)、[服务器与拓扑](docs/server-topology.md)、[同步约定](docs/sync-contract.md) 和 [模块同步状态](docs/module-sync-status-20260727.md)。禁止提交密码、Token、真实 `.env`、客户数据、原始日志、数据库导出或构建产物。
