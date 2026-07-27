@@ -11,4 +11,6 @@
 | `netops-aiops` | AIOps、ELK、规则和分析任务 | 20 |
 | `netops-littleProgram` | 小程序及其业务后端 | 233 |
 
+当前服务器、项目职责与本地/服务器/GitHub 同步状态请见 [服务器、项目与同步矩阵](docs/server-project-sync-matrix.md)。
+
 先阅读 [模块地图](docs/module-map.md)、[服务器与拓扑](docs/server-topology.md)、[安全运行态核验](docs/security-runtime-audit-20260726.md)、[同步约定](docs/sync-contract.md) 和 [同步状态](docs/synchronization-status-20260727.md)。禁止提交密码、Token、真实 `.env`、客户数据、原始日志、数据库导出或构建产物。
