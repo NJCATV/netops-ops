@@ -33,3 +33,12 @@ post-DNAT destination/port, not `13306`.
 whose SSH port matches the host.  The policy is five failed attempts in ten
 minutes, followed by a 24-hour ban.  It uses the systemd SSH journal and does
 not replace firewall source allowlists.
+
+## 212 ClickHouse data node
+
+`212/netops-clickhouse-port-guard.sh` protects the verified data-node surface:
+SSH `5334` is limited to `172.31.0.0/16`; ClickHouse HTTP `8123` is limited to
+233, 236, 213 and loopback; native/internal `9000/9004/9005/9009` are
+loopback-only.  It must be installed together with `212-netops-sshd.local`.
+The script must be revised before adding a ClickHouse cluster, replication or
+another HTTP client.

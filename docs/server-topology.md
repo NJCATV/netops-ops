@@ -21,6 +21,6 @@ NAS / BRAS 镜像流量 ── UDP 1812/1813/3799 ──► 213 Radius Monitor
 | 236 | `172.31.1.236` | Go/旧采集、采集业务库 | Agent `18086`、MySQL `3339`；SSH `5333` 已接入 Fail2ban；**未发现主机入站白名单，待来源矩阵确认后收敛** |
 | 20 | `172.25.60.20` | AIOps、MySQL、Elasticsearch、Kibana | `netops-aiops-port-guard.service` 已核验：API `18080/18190` 仅本机和 233；MySQL `13306`、Kibana `5601` 仅本机和 `172.31.0.0/16`；ES `9200` 仅本机和 Docker bridge；SSH `5332` 已接入 Fail2ban |
 | 213 | `172.25.194.213` | Radius 报文镜像采集与解析 | `netops-radius-port-guard.service` 已核验：MySQL `3306` 仅本机和 `172.31.0.0/16`；监控 `18190` 仅本机和 233；SSH `5334` 已接入 Fail2ban |
-| 212 | `172.25.194.212` | ClickHouse 历史分析与备份 | ClickHouse HTTP `8123`、Native `9000`；主机访问控制待本轮 SSH 核验 |
+| 212 | `172.25.194.212` | ClickHouse 历史分析与备份 | ClickHouse HTTP `8123` 供 233/236/213 使用；Native/internal `9000/9004/9005/9009` 无外部依赖；已形成端口守卫与 Fail2ban 部署模板，待部署后复核 |
 
 端口“允许来源”是策略描述，不包含口令；真实防火墙脚本位于 `deploy/security/`，每次变更需先验证 Docker 内网桥和服务间依赖后再收敛。

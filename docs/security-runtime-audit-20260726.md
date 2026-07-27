@@ -10,7 +10,7 @@
 | 20 | `fail2ban` 已启用 | `netops-aiops-port-guard.service`，同时保护 `INPUT` 与 Docker `DOCKER-USER` | 已核验；UFW 未启用是设计选择，不代表端口裸露 |
 | 213 | `fail2ban` 已启用 | `netops-radius-port-guard.service` 写入 nftables/iptables | 已核验；UFW 未启用是设计选择，不代表端口裸露 |
 | 236 | `fail2ban` 已启用 | 未发现 UFW、nftables 或 iptables 入站白名单 | 风险项：需先确认全部调用来源后实施独立白名单变更 |
-| 212 | 未完成 SSH 主机审计 | 未核验 | 仅验证了被业务调用的 ClickHouse 数据面，不能替代主机安全审计 |
+| 212 | 审计完成，Fail2ban 待部署 | 当前无主机访问控制；端口守卫模板已形成 | 风险项已定位：ClickHouse 多个监听端口全网卡、UFW inactive、iptables 默认 ACCEPT |
 
 ## 233：统一入口与 BFF
 
@@ -37,6 +37,14 @@
 - `18190/tcp` 仅允许本机和 `172.31.1.233`，供平台基础设施探针访问。
 - SSH 为 `5334/tcp`，`fail2ban` 的 `sshd` jail 已启用。
 - Radius 镜像抓取属于被动采集路径；NAS/BRAS 的 UDP 报文关系见 `server-topology.md`，不要把它误写成浏览器或数据库入口。
+
+## 212：ClickHouse 数据节点审计与收敛计划
+
+- ClickHouse `25.3.14.14` 正常运行，业务库为 `go_collector_ch` 与 `radius_monitor_ch`；无本机应用 Git 仓库。
+- `8123`、`9000`、`9004`、`9005`、`9009` 当前监听在 `0.0.0.0`；UFW inactive，iptables 默认 ACCEPT，Fail2ban 未安装。
+- 用户层已限制：`go_collector` 仅 233/236，`radius_reader` 仅 233，`radius_writer` 仅 213；这是数据库认证边界，不能替代主机网络边界。
+- 已确认无外部 ClickHouse 集群/副本；236 采集器通过 HTTP `8123`，233 查询、213 Radius 写入均通过 `8123`。
+- 部署 `deploy/security/212/netops-clickhouse-port-guard.*` 后，应允许 233/236/213 到 `8123`，仅保留 `172.31.0.0/16` 到 SSH `5334`，并将 `9000/9004/9005/9009` 设为回环限定；同时安装 `212-netops-sshd.local` 与 Fail2ban。
 
 ## 236：待执行的收敛事项
 

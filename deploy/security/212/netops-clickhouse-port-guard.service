@@ -1,0 +1,12 @@
+[Unit]
+Description=NetOps ClickHouse data-node port guard
+After=network-online.target clickhouse-server.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/netops-clickhouse-port-guard
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
