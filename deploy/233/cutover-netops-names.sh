@@ -61,6 +61,27 @@ for old, new in {
 # Retain NetOps' generic route, but make it more specific than the unrelated /api/ socket.
 t = t.replace('location ^~ /wx/api/ {', 'location ^~ /api/netops2026/ {')
 t = t.replace('proxy_pass http://127.0.0.1:7001/api/;', 'proxy_pass http://127.0.0.1:7001/api/netops2026/;', 1)
+marker = '    location ^~ /api/netops2026/ {'
+admin_block = '''    # Current platform administration API; /api/admin remains legacy.
+    location ^~ /api/netops2026/admin/ {
+        limit_req zone=api_limit burst=20 nodelay;
+        add_header X-NetOps-API-Proxy hit always;
+        proxy_pass http://127.0.0.1:7001/api/admin/;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Authorization     $http_authorization;
+        proxy_connect_timeout 30;
+        proxy_read_timeout    120;
+        proxy_send_timeout    120;
+    }
+
+'''
+if 'location ^~ /api/netops2026/admin/' not in t:
+    if marker not in t:
+        raise SystemExit('NetOps API marker missing; refusing to insert admin route')
+    t = t.replace(marker, admin_block + marker, 1)
 # The generic /api/ block belongs to the same Flask BFF.  Leaving it on the
 # historical newalert socket makes portal administration endpoints return 404.
 t = t.replace('proxy_pass http://unix:/tmp/gunicorn_newalertadmin.sock:/api/;', 'proxy_pass http://127.0.0.1:7001;', 1)
@@ -79,7 +100,7 @@ if 'location ^~ /wx/' not in t:
     if spa_marker not in t:
         raise SystemExit('Nginx SPA marker missing; refusing to insert legacy-route block')
     t = t.replace(spa_marker, legacy_block + spa_marker, 1)
-if re.search(r'^[ \t]*location\b[^\n]*?/wx/api', t, flags=re.M) or 'location ^~ /api/netops2026/' not in t or 'location ^~ /wx/' not in t or '/srv/netops/netops-portal-web/dist;' not in t or 'proxy_pass http://unix:/tmp/gunicorn_newalertadmin.sock:/api/;' in t:
+if re.search(r'^[ \t]*location\b[^\n]*?/wx/api', t, flags=re.M) or 'location ^~ /api/netops2026/' not in t or 'location ^~ /api/netops2026/admin/' not in t or 'location ^~ /wx/' not in t or '/srv/netops/netops-portal-web/dist;' not in t or 'proxy_pass http://unix:/tmp/gunicorn_newalertadmin.sock:/api/;' in t:
     raise SystemExit('Nginx normalization verification failed')
 p.write_text(t)
 PY
@@ -96,7 +117,7 @@ for _ in {1..10}; do
   sleep 1
 done
 [[ "$code" == 401 ]] || { echo "unexpected NetOps API status: $code" >&2; exit 1; }
-admin_code=$(curl -k -s -o /dev/null -w '%{http_code}' --resolve anbo.njcatv.net:5772:127.0.0.1 -A 'NetOps-HealthCheck/1.0' https://anbo.njcatv.net:5772/api/admin/menus)
+admin_code=$(curl -k -s -o /dev/null -w '%{http_code}' --resolve anbo.njcatv.net:5772:127.0.0.1 -A 'NetOps-HealthCheck/1.0' https://anbo.njcatv.net:5772/api/netops2026/admin/menus)
 [[ "$admin_code" == 401 ]] || { echo "unexpected admin API status: $admin_code" >&2; exit 1; }
 for _ in {1..10}; do
   legacy_code=$(curl -k -s -o /dev/null -w '%{http_code}' --resolve anbo.njcatv.net:5772:127.0.0.1 -A 'NetOps-HealthCheck/1.0' https://anbo.njcatv.net:5772/wx/api/health)

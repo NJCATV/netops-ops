@@ -46,6 +46,27 @@ import sys
 
 path = Path(sys.argv[1])
 text = path.read_text(encoding="utf-8")
+marker = "    location ^~ /api/netops2026/ {"
+admin_block = """    # Current platform administration API; /api/admin remains legacy.
+    location ^~ /api/netops2026/admin/ {
+        limit_req zone=api_limit burst=20 nodelay;
+        add_header X-NetOps-API-Proxy hit always;
+        proxy_pass http://127.0.0.1:7001/api/admin/;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Authorization     $http_authorization;
+        proxy_connect_timeout 30;
+        proxy_read_timeout    120;
+        proxy_send_timeout    120;
+    }
+
+"""
+if "location ^~ /api/netops2026/admin/" not in text:
+    if marker not in text:
+        raise SystemExit("current NetOps API location is missing")
+    text = text.replace(marker, admin_block + marker, 1)
 start = text.find("    location /api/ {")
 if start < 0:
     raise SystemExit("generic /api/ location is missing")
@@ -109,6 +130,11 @@ if [[ $(curl -sS -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:7003/ap
 fi
 if [[ $(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:7001/api/netops2026/auth/me) != 401 ]]; then
   echo 'Current BFF regression probe failed.' >&2
+  rollback_nginx
+  exit 1
+fi
+if [[ $(curl -k -sS -o /dev/null -w '%{http_code}' --resolve anbo.njcatv.net:5772:127.0.0.1 https://anbo.njcatv.net:5772/api/netops2026/admin/menus) != 401 ]]; then
+  echo 'Current admin API public route probe failed.' >&2
   rollback_nginx
   exit 1
 fi
