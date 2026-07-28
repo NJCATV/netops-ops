@@ -1,0 +1,29 @@
+[Unit]
+Description=NetOps legacy 2025 API (isolated)
+After=network-online.target mysql.service redis-server.service
+Wants=network-online.target mysql.service redis-server.service
+
+[Service]
+Type=simple
+User=yvesyuan
+Group=www-data
+WorkingDirectory=/home/yvesyuan/PycharmProjects/newalertadmin
+Environment=PYTHONUNBUFFERED=1
+# The legacy application starts an in-process scheduler by default.  Keep its
+# marker in a private temporary directory so the compatibility API stays read
+# and request driven; scheduled jobs remain owned by the current platform.
+Environment=TMPDIR=/home/yvesyuan/.cache/netops-legacy-api
+ExecStartPre=/bin/sh -c 'mkdir -p /home/yvesyuan/.cache/netops-legacy-api && printf 1 > /home/yvesyuan/.cache/netops-legacy-api/flask_scheduler_master.pid'
+ExecStart=/home/yvesyuan/PycharmProjects/newalertadmin/venv/bin/gunicorn --workers 1 --bind 127.0.0.1:7003 --timeout 120 --graceful-timeout 30 --keep-alive 5 --access-logfile - --error-logfile - run:app
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/home/yvesyuan/PycharmProjects/newalertadmin/logs /home/yvesyuan/PycharmProjects/newalertadmin/exports /home/yvesyuan/.cache/netops-legacy-api
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
