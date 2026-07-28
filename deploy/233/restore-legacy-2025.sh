@@ -69,6 +69,9 @@ if ! nginx -t; then
 fi
 
 install -m 0644 "$SCRIPT_DIR/netops-legacy-api.service" "$SERVICE_FILE"
+# systemd validates ReadWritePaths before ExecStartPre.  Create the private
+# scheduler-marker directory outside the sandbox setup first.
+install -d -o yvesyuan -g www-data -m 0750 /home/yvesyuan/.cache/netops-legacy-api
 systemctl daemon-reload
 systemctl enable --now netops-legacy-api.service
 
@@ -85,8 +88,8 @@ if [[ $(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:7001/api/netops
 fi
 
 systemctl reload nginx
-legacy_code=$(curl -k -sS -o /dev/null -w '%{http_code}' --resolve 172.31.1.233:5772:127.0.0.1 https://172.31.1.233:5772/2025/)
-legacy_login_code=$(curl -k -sS -o /dev/null -w '%{http_code}' -X POST --resolve 172.31.1.233:5772:127.0.0.1 https://172.31.1.233:5772/api/admin/login -H 'Content-Type: application/json' -d '{}')
+legacy_code=$(curl -A 'NetOps-HealthCheck/1.0' -k -sS -o /dev/null -w '%{http_code}' --resolve 172.31.1.233:5772:127.0.0.1 https://172.31.1.233:5772/2025/)
+legacy_login_code=$(curl -A 'NetOps-HealthCheck/1.0' -k -sS -o /dev/null -w '%{http_code}' -X POST --resolve 172.31.1.233:5772:127.0.0.1 https://172.31.1.233:5772/api/admin/login -H 'Content-Type: application/json' -d '{}')
 [[ "$legacy_code" == 200 && "$legacy_login_code" == 400 ]] || { echo "Legacy public probes failed: ui=$legacy_code login=$legacy_login_code" >&2; exit 1; }
 
 echo "Legacy 2025 restored; backup: $BACKUP_DIR"
