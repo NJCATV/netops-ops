@@ -61,6 +61,32 @@ if new not in block:
     block = block.replace(old, new, 1)
     text = text[:start] + block + text[end:]
     path.write_text(text, encoding="utf-8")
+
+# Keep the retired Vue2 package outside the deployable NetOps portal dist
+# directory. A portal release replaces DIST_ROOT atomically, so serving the
+# legacy route from there would silently remove /2025 again.
+legacy_start = text.find("    location ^~ /2025/ {")
+if legacy_start < 0:
+    raise SystemExit("legacy /2025/ location is missing")
+legacy_end = text.find("    }", legacy_start)
+if legacy_end < 0:
+    raise SystemExit("cannot determine legacy /2025/ location boundary")
+legacy_end += len("    }")
+legacy_block = text[legacy_start:legacy_end]
+legacy_root = "        root /var/www/NetAlert/frontend/dist;"
+if legacy_root not in legacy_block:
+    if "try_files $uri $uri/ /2025/index.html;" not in legacy_block:
+        raise SystemExit("unexpected legacy /2025/ location; refusing to change it")
+    legacy_block = legacy_block.replace(
+        "    location ^~ /2025/ {\n",
+        "    location ^~ /2025/ {\n"
+        "        # Independent preserved Vue2 package; never replace on portal deploy.\n"
+        f"{legacy_root}\n",
+        1,
+    )
+    text = text[:legacy_start] + legacy_block + text[legacy_end:]
+
+path.write_text(text, encoding="utf-8")
 PY
 
 if ! nginx -t; then
